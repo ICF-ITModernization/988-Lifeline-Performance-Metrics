@@ -6,13 +6,6 @@
     <title>SAMHSA 988 Lifeline - Performance Metrics</title>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"> <!-- Favicon link added here -->
     <script type="module" src="https://tableau.awsicf-i2dev.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
-    <style>
-        #message {
-            font-size: 16px;
-            color: red;
-            margin-top: 10px;
-        }
-    </style>
 </head>
 <body>
     <tableau-viz id="tableau-viz" 
@@ -21,47 +14,5 @@
                  height="1363" 
                  toolbar="bottom">
     </tableau-viz>
-    <div id="message"></div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var vizElement = document.getElementById('tableau-viz');
-            var viz = vizElement.viz;
-
-            vizElement.addEventListener('firstinteractive', function() {
-                console.log("Tableau Viz has loaded.");
-                addFilterEventListener(viz);
-            });
-
-            function addFilterEventListener(viz) {
-                var sheet = viz.getWorkbook().getActiveSheet().getWorksheets().get("Contacts by Service Type");
-
-                sheet.addEventListener(tableau.TableauEventName.FILTER_CHANGE, function (filterEvent) {
-                    filterEvent.getFilterAsync().then(function (filter) {
-                        var appliedValues = filter.getAppliedValues();
-                        var isVeteransSelected = appliedValues.some(function (value) {
-                            return value.formattedValue === "Veterans";
-                        });
-
-                        var categorySheet = viz.getWorkbook().getActiveSheet().getWorksheets().get("Routed Contact Category");
-                        categorySheet.getFiltersAsync().then(function (filters) {
-                            var isAnsweredSelected = filters.some(function (filter) {
-                                return filter.getFieldName() === "Routed Contact Category" &&
-                                       filter.getFilterType() === "categorical" &&
-                                       filter.getAppliedValues().some(function (value) {
-                                           return value.formattedValue === "Answered";
-                                       });
-                            });
-
-                            if (isVeteransSelected && isAnsweredSelected) {
-                                document.getElementById("message").innerText = "SAMHSA does not have Veterans answered data, not that there were 0 answered contacts.";
-                            } else {
-                                document.getElementById("message").innerText = "";
-                            }
-                        });
-                    });
-                });
-            }
-        });
-    </script>
 </body>
 </html>
